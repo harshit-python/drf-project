@@ -1,6 +1,7 @@
 from django.urls import path, include
-from .views import movie_list
+from .views import filter_movies, retrieve_movie
 
 urlpatterns = [
-    path("list/", movie_list, name="movie-list"),
+    path("list/", filter_movies, name="filter-movies"),
+    path("<int:pk>/", retrieve_movie, name="retrieve-movie")
 ]
