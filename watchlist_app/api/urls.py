@@ -2,9 +2,9 @@
 from django.urls import path, include
 
 # project imports
-from .views import filter_movies, retrieve_movie
+from .views import list_create, retrieve_update_delete
 
 urlpatterns = [
-    path("list/", filter_movies, name="filter-movies"),
-    path("<int:pk>/", retrieve_movie, name="retrieve-movie")
+    path("", list_create, name="list-create"),
+    path("<int:pk>/", retrieve_update_delete, name="retrieve-update-delete")
 ]
