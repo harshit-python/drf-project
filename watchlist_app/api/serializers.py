@@ -2,20 +2,21 @@
 from rest_framework import serializers
 
 # project imports
-from watchlist_app.models import WatchList, StreamPlatform
+from watchlist_app.models import WatchList, StreamPlatform, Review
 
 
 """Model Serializers"""
 
 
-class StreamPlatformSerializer(serializers.ModelSerializer):
+class ReviewSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = StreamPlatform
+        model = Review
         fields = "__all__"
 
 
 class WatchListSerializer(serializers.ModelSerializer):
+    watchlist_reviews = ReviewSerializer(many=True, read_only=True)
 
     class Meta:
         model = WatchList
@@ -31,6 +32,14 @@ class WatchListSerializer(serializers.ModelSerializer):
     def title_length_validator(self, value):
         if len(value) < 2:
             raise serializers.ValidationError("Name is too short!")
+
+
+class StreamPlatformSerializer(serializers.ModelSerializer):
+    watchlist_platform = WatchListSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = StreamPlatform
+        fields = "__all__"
 
 
 """Normal Serializers"""
