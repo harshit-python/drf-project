@@ -1,5 +1,6 @@
 # python imports
 from rest_framework.response import Response
+from rest_framework.exceptions import ValidationError
 # from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework import status
@@ -23,12 +24,21 @@ class ReviewList(generics.ListAPIView):
 class ReviewCreate(generics.CreateAPIView):
     serializer_class = ReviewSerializer
 
+    def get_queryset(self):
+        return Review.objects.all()
+
     def perform_create(self, serializer):
         pk = self.kwargs['pk']
         watchlist_object = WatchList.objects.get(pk=pk)
 
+        # make sure one user reviews any show only once
+        review_user = self.request.user
+        review_queryset = Review.objects.filter(watchlist=watchlist_object, review_user=review_user)
+        if review_queryset.exists():
+            raise ValidationError("You have already reviewed this item!")
+
         # rewriting watchlist object foreign key
-        serializer.save(watchlist=watchlist_object)
+        serializer.save(watchlist=watchlist_object, review_user=review_user)
 
 
 class ReviewDetail(generics.RetrieveUpdateDestroyAPIView):
